@@ -1,0 +1,68 @@
+<div class='row'>
+  <div class='col-sm-8 col-sm-offset-2'>
+    <div class="page-header">
+      <h1>{{ post.title }} <small>{{ post.publishDate }}</small></h1>
+    </div>
+    <span ng-if='post.image'>
+      <img ng-src='{{ post.image }}' class='img-responsive'> <br/>
+    </span>
+
+    <p markdown-to-html='post.content'> {{ post.content }}</p>
+    <hr>
+
+    <div class='row' ng-show='comments.length > 0'>
+      <div class="col-sm-6">
+        <h3>Comments</h3>
+      </div>
+      <div class='col-sm-6'>
+        <input style="margin-top: 18px;" class='form-control' type='text' ng-model='query' placeholder='Filter Comments' /> <br/>
+      </div>
+      <div class="col-sm-12">
+        <hr>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <form ng-submit='addNewComment()'>
+          <div class="form-group" ng-class="{'has-error': commentError.content}">
+            <textarea class='form-control' id='contentText' placeholder="New comment"
+              ng-model='newComment.content'></textarea>
+            <label class="control-label" for="contentText" ng-if='commentError.content'>
+              <span ng-repeat='error in commentError.content'>{{error}}</span>
+            </label>
+          </div>
+          <input class='btn btn-default' type='submit' value="Submit Comment" />
+        </form>
+      </div>
+      <div class="col-sm-6" ng-if='newComment.content'>
+        <p style='color:red;'>Preview:</p>
+        <p> {{ newComment.content }}</p>
+      </div>
+    </div>
+    <hr>
+    <div class='row'>
+      <div class='col-sm-12' ng-repeat='comment in comments | orderBy: commentOrder | filter: query'>
+        {{ comment.content }}
+        <small> <div ng-show='comment.user.username == currentUser'>
+          via {{comment.user.username}} |
+          <a href='#'
+            confirm-click='Do you want to delete this?'
+            confirmed-click='deleteComment(comment)'>Remove
+          </a></div></small>
+        <br/>
+        <small>
+            <a href="#" ng-click="isShowReplies = !isShowReplies">
+            <span ng-show='!isShowReplies'>
+            Reply/View comments:
+          </span><span ng-show='isShowReplies'>Hide</span> {{comment.reply_count}}</a>
+        </small>
+        <br>
+        <div class='col-sm-6' ng-show='isShowReplies'>
+          <comment-reply-thread comment='comment' slug='post.slug'></comment-reply-thread>
+        </div>
+        <div class="clearfix"></div>
+        <hr>
+      </div>
+    </div>
+  </div>
+</div>
